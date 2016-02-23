@@ -1,0 +1,17 @@
+language: haskell
+
+cache:
+  directories:
+    - $HOME/.cabal
+    - $HOME/.ghc
+
+before_install:
+  - sh install-xsltproc
+
+install:
+  - (cd .. && git clone --depth=1 https://github.com/iphydf/yst && cd yst && cabal install)
+  - (cd .. && git clone --depth=1 https://github.com/toktok/tox-spec)
+  - export PATH=$HOME/.cabal/extra-dist/bin:$PATH
+
+script:
+  - make

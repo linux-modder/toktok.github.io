@@ -1,0 +1,6 @@
+title     : The TokTok Project
+indexfile : index.yaml
+sourcedir : [.]
+datadir   : .
+filesdir  : [files]
+layout    : layout.html.st

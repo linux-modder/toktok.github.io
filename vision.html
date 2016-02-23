@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>The TokTok Project - Long term vision</title>
+    <link rel="stylesheet" type="text/css" media="screen"
+          href="css/main.css"/>
+    <link rel="stylesheet" type="text/css" media="screen"
+          href="css/rust.css"/>
+  </head>
+  <body>
+    <nav id="sidemenu">
+      <ul class="nav tree"><li><a href="index.html">Home</a></li><li><a href="mission.html">Mission</a></li><li><a href="roadmap.html">Roadmap</a></li><li class="current"><a href="vision.html">Long term vision</a></li><li><a href="spec.html">Tox specification</a></li><li><a href="development.html">Development process</a></li><li><a href="designs.html">Designs</a></li></ul>
+    </nav>
+
+    <div id="content">
+
+      <h1 class="title">Long term vision</h1>
+
+      <main>
+        <p>The TokTok Project goal is to <strong>reinvent the internet</strong>. Big words. What does reinventing the internet mean? Let’s first look at where we are now.</p>
+<h1 id="our-digital-life"><span class="header-section-number">1</span> Our digital life</h1>
+<p>Imagine this: you activate your smartphone in the morning, and you receive a bunch of messages from friends and play a game of chess with a stranger on the internet. You then turn on your laptop and open a document you were working on from your desktop computer earlier today. Sounds pretty normal, right? These are things our internet supports.</p>
+<p>How does all of this work?</p>
+<ul>
+<li>Your friend wrote a message to you. When they press “send”, the phone application sends the message to a server (a publicly accessible computer) on the internet. When you wake up your phone, it connects to that server and collects the message. The server may then tell your friend’s phone that the message was collected and mark it as delivered.</li>
+<li>To play a game of chess, you connect to a chess server, which mediates between you and your chess partner. It verifies that the moves you make are valid, and decides when the game is over (someone won or gave up).</li>
+<li>To access a document on two computers, you store it on a server and retrieve it. Anytime you change it, a new copy is uploaded to the server, and your other computers will download it.</li>
+</ul>
+<p>Sounds good. Seems fine. Except there is one problem with all of this: those servers storing information and computing things for you are most likely <em>not yours</em>.</p>
+<h1 id="a-new-way-of-computing"><span class="header-section-number">2</span> A new way of computing</h1>
+<p>Let’s reimagine this.</p>
+<p>Let’s imagine, instead of storing messages on a server, we store it on and retrieve it from the internet. Instead of having a server calculate your company’s annual revenue, the internet does that. Your documents are stored on the internet. You want your videos stabilised? Send them off to the internet along with a stabilisation program and get it done.. by the internet.</p>
+<h2 id="what-is-the-internet"><span class="header-section-number">2.1</span> What is the internet?</h2>
+<p>The internet is made up of every computer that is connected to it. It’s a network of computers that all do exactly two things: store data, and calculate stuff. This is already the case, but the difference between the current internet and the new internet is this: In the new internet, <strong>none of the computers know what they are doing</strong>. Compute power is simply a resource that you use and provide, buy and sell.</p>
+<p>In this internet, there is <strong>no surveillance</strong>, because there is nothing to see. Pieces of data are flying around the internet, partial computations are performed in various places, but there is no way to reconstruct the intent of the originator.</p>
+<p>In this internet, there is <strong>no censorship</strong>. There is nothing to block. There are no patterns to match internet packets against, as they all look similar to observers: like random noise.</p>
+<h1 id="how"><span class="header-section-number">3</span> How?</h1>
+<p>There are various advances in distributed routing made by projects such as <a href="https://freenetproject.org">Freenet</a>. Other projects, such as Tox, have created means for private communication. The TokTok project is about spreading these means, making them <em>easy</em> for people to use, and furthering research in these areas. We will create a transition path for traditional services to operate within the new internet and gradually migrate.</p>
+<h1 id="no-really-how"><span class="header-section-number">4</span> No really, how?</h1>
+<p>You’re interested in the technical details? Well, we haven’t worked out all the exact details, yet, but the current plan is:</p>
+<ul>
+<li><em>Use the Tox protocol to establish a mesh network</em>. This builds on top of the traditional internet and creates a network where devices are not addressed by Internet Protocol Address, but by public key. This lowest level allows devices to find each other on the internet and establishes computationally secure communication channels between them.</li>
+<li><em>Build a dynamic distributed storage system on top of the mesh</em>. The TokTok Distributed File System (TDFS) provides a means for ephemeral data storage. It builds on ideas in Freenet to create a way to reliably and securely store information. If information is used, it is stored. If it is forgotten, the internet will forget about it as well.</li>
+<li><em>Build a distributed computation platform</em>. To perform secure and anonymous computations, the computation itself needs to be split into pieces. Each participant in the computation receives a part of the problem and instructions to execute on that problem. The TokTok Distributed Computer (TDC) builds on ideas in <a href="https://folding.stanford.edu/">Folding@home</a> to provide a virtual computer that can securely execute any program on any data using CPU cycles from a distributed set of physical computers.</li>
+</ul>
+<h1 id="in-the-meantime.."><span class="header-section-number">5</span> In the meantime..</h1>
+<p>..we’re <a href="mission">building privacy enhancing software for everyone</a>.</p>
+<p>This document presents the long term vision, but like we said, we are a focussed group of software and systems engineers, cryptographers, and distributed systems researchers. We want to bring value to the world by helping every person protect their privacy using the software we create or collaborate on.</p>
+      </main>
+
+    </div>
+  </body>
+</html>
