@@ -24,6 +24,27 @@
   </xsl:template>
 
 
+  <xsl:template match="td[preceding-sibling::td[1] = 'Message Kind']" mode="tbody-recurse">
+    <xsl:param name="payload"/>
+    <xsl:param name="packet-kind"/>
+
+    <xsl:copy>
+      <xsl:apply-templates select="@*" mode="tbody-recurse"/>
+      <xsl:value-of select="concat(concat(., concat(': &quot;', substring-after(translate($packet-kind, ' -', ''), 'Test:'))), '&quot;')"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="td[following-sibling::td[1] = 'Message Kind']/code" mode="tbody-recurse">
+    <xsl:param name="payload"/>
+    <xsl:param name="packet-kind"/>
+
+    <xsl:copy>
+      <xsl:apply-templates select="@*" mode="tbody-recurse"/>
+      <xsl:value-of select="string-length(substring-after(translate($packet-kind, ' -', ''), 'Test:'))"/>
+    </xsl:copy>
+  </xsl:template>
+
+
   <xsl:template match="td[preceding-sibling::td[1] = 'Packet Kind']" mode="tbody-recurse">
     <xsl:param name="payload"/>
     <xsl:param name="packet-kind"/>

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+cp ../tox-spec/spec.md _src/content/spec.md
+#	cp ../tox-spec/rust.css _src/files/css/
+cp -a ../tox-spec/img _src/files/
+
+if git diff --exit-code HEAD; then
+  echo "Site already up-to-date"
+  exit
+fi
+
+(cd _src && yst)
+for f in $XSLT_INPUTS; do
+  xsltproc -o $f _src/xsl/transform.xsl $f
+done
+for f in _src/site/*; do			\
+  rm -rf `echo $f | sed -e 's|_src/site/||'`
+done
+mv _src/site/* .
+rmdir _src/site

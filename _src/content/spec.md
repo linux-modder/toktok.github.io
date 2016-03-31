@@ -391,7 +391,7 @@ local DHT key starts with e.g. `0x80` and the bucketed node key starts with
 the bucket index is 1. If the keys are almost exactly equal and only the last
 bit differs, the bucket index is 255.
 
-### Updating k-buckets
+### Manipulating k-buckets
 
 Any update or lookup operation on a k-buckets instance that involves a single
 node requires us to first compute the bucket index for that node. An update
@@ -414,11 +414,77 @@ Info in the bucket. Removing a node for which no Node Info exists in the
 k-buckets has no effect. Thus, removing a node twice is permitted and has the
 same effect as removing it once.
 
+Iteration order of a k-buckets instance is in order of distance from the base
+key. I.e. the first node seen in iteration is the closest, and the last node is
+the furthest away in terms of the distance metric.
+
 ## DHT node state
 
-Every DHT stores a number of Node Infos of nodes that are close to its own DHT
-public key. It uses the k-buckets data structure for this, with the local DHT
-public key as the base key.
+Every DHT node contains the following state:
+
+-   DHT Key Pair: The Key Pair used to communicate with other DHT nodes. It is
+    immutable throughout the lifetime of the DHT node.
+
+-   DHT Close List: A set of Node Infos of nodes that are close to the DHT
+    Public Key (public part of the DHT Key Pair). The Close List is represented
+    as a [k-buckets](#k-buckets) data structure, with the DHT Public Key as the
+    Base Key.
+
+-   DHT Search List: A list of Public Keys of nodes that the DHT node is
+    searching for, associated with a DHT Search Entry.
+
+A DHT node state is initialised using a Key Pair, which is stored in the state
+as DHT Key Pair and as base key for the Close List. Both the Close and Search
+Lists are initialised to be empty.
+
+### DHT Search Entry
+
+A DHT Search Entry contains a k-buckets instance, which serves the same purpose
+as the Close List, but the base key is the searched node's Public Key. Once the
+searched node is found, it is also stored in the Search Entry. Recall that
+k-buckets never contain a Node Info for the base key, so it must be stored
+outside the k-buckets instance.
+
+A Search Entry is initialised with the searched-for Public Key. The contained
+k-buckets instance is initialised to be empty.
+
+### Manipulating the DHT node state
+
+Adding a search node to the DHT node state creates an empty entry in the Search
+Nodes list. If a search entry for the public key already existed, the "add"
+operation has no effect.
+
+Removing a search node removes its search entry and all associated data
+structures from memory.
+
+The iteration order over the DHT state is to first process the Close List
+k-buckets, then the Search List entry k-buckets. Each list itself follows the
+iteration order in the k-buckets specification.
+
+The size of the DHT state is defined to be the number of node infos it
+contains. Node infos contained multiple times, e.g. as part of the close list
+and as part of various search entries, are counted as many times as they
+appear.
+
+Search nodes do not directly count towards the state size. The state size is
+relevant to later pruning algorithms that decide when to remove a node info and
+when to request a ping from stale nodes. Search nodes, once added, are never
+automatically pruned.
+
+Adding and removing a node (Node Info) to the state is done by adding or
+removing the node to each k-bucket in the state, i.e. the close list and all
+the k-buckets in the search entries.
+
+When adding a node to the state, the search entry for the node's public key, if
+it exists, is updated to contain the new Node Info. All k-buckets that already
+contain the node will also be updated. See the k-buckets specification for the
+update algorithm.
+
+Removing a node from the state unsets the Node Info in the search entry, if
+such exists. The search entry itself is not removed. All k-buckets that
+contained the node will no longer contain it after removing the node from the
+state. The only reference to the node's public key will be the search entry, if
+it exists.
 
 ## Self-organisation
 
@@ -3799,7 +3865,8 @@ replaced eventually. For the sake of maintaining compatibility down the road,
 it is documented here.
 
 The binary encoding of all integer types in the state format is a fixed-width
-byte sequence with the integer encoded in Little Endian.
+byte sequence with the integer encoded in Little Endian unless stated
+otherwise.
 
 | Length | Contents                |
 |:-------|:------------------------|
@@ -3881,7 +3948,8 @@ reconnect to the DHT after a Tox client is restarted.
 |:-------|:--------------|
 | `?`    | List of nodes |
 
-The structure of a node is the same as `Node Info`.
+The structure of a node is the same as `Node Info`. Note: this means that the
+integers stored in these nodes are stored in Big Endian as well.
 
 ### Friends (0x03)
 
@@ -3894,17 +3962,28 @@ sent a friend request to or a peer we've accepted a friend request from.
 
 Friend:
 
+Some of the integers in this structure are stored in Big Endian. This is
+denoted with "(BE)".
+
+Unfortunately, toxcore copies the friend structure directly from memory to the
+state file. This makes the state format platform dependent because the way a
+structure is laid out in memory differs across platforms and compilers. A
+common layout of this structure in memory (GCC on x86 and x86\_64) is described
+below and should be accounted for both when serializing and deserializing the
+state file.
+
 | Length | Contents                                                   |
 |:-------|:-----------------------------------------------------------|
 | `1`    | `uint8_t` Status                                           |
 | `32`   | Long term public key                                       |
 | `1024` | Friend request message as a UTF-8 encoded string           |
-| `2`    | `uint16_t` Size of the friend request message              |
+| `2`    | `uint16_t` Size of the friend request message (BE)         |
 | `128`  | Name as a UTF-8 encoded string                             |
-| `2`    | `uint16_t` Size of the name                                |
+| `2`    | `uint16_t` Size of the name (BE)                           |
 | `1007` | Status message as a UTF-8 encoded string                   |
-| `2`    | `uint16_t` Size of the status message                      |
+| `2`    | `uint16_t` Size of the status message (BE)                 |
 | `1`    | `uint8_t` User status (see also: `USERSTATUS`)             |
+| `3`    | PADDING                                                    |
 | `4`    | `uint32_t` Nospam (only used for sending a friend request) |
 | `8`    | `uint64_t` Last seen time                                  |
 
@@ -3944,7 +4023,8 @@ This section contains a list of TCP relays.
 |:-------|:-------------------|
 | `?`    | List of TCP relays |
 
-The structure of a TCP relay is the same as `Node Info`.
+The structure of a TCP relay is the same as `Node Info`. Note: this means that
+the integers stored in these nodes are stored in Big Endian as well.
 
 ### Path Nodes (0x0B)
 
@@ -3954,9 +4034,300 @@ This section contains a list of path nodes used for onion routing.
 |:-------|:-------------------|
 | `?`    | List of path nodes |
 
-The structure of a path node is the same as `Node Info`.
+The structure of a path node is the same as `Node Info`. Note: this means that
+the integers stored in these nodes are stored in Big Endian as well.
 
 ### EOF (0xFF)
 
 This section indicates the end of the state file. This section doesn't have any
 content and thus it's length is 0.
+
+# Test protocol
+
+The test framework consists of a model implementation and a test runner. A
+“system under test” (SUT) is a protocol implementation that is tested by the
+test runner. The SUT is presented to the test runner as a standalone executable
+that communicates with it using pipes.
+
+The test runner and SUT both implement the binary test protocol.
+
+The test input is a length-prefixed test name and an arbitrary piece of data.
+The meaning of that data depends on the test name.
+
+| Length    | Type         | Contents       |
+|:----------|:-------------|:---------------|
+| `8`       | Int          | Length of name |
+| `$length` | Message Kind | Test name      |
+| `[0,]`    | Bytes        | Payload        |
+
+## Basic data encoding
+
+The test protocol uses a limited and well-defined set of types. Their binary
+encodings are specified here.
+
+In the `BinaryDecode` and `BinaryEncode` tests, the test name is followed by a
+data format name. The test runner will run both the decode and encode tests for
+each data format listed here.
+
+All lists are encoded as 64 bit length (big endian encoded) followed by each
+element concatenated. List is a parameterised type and as such is not used in
+tests directly.
+
+`String`: Strings are lists of bytes containing the UTF-8 encoded code points
+making up the string.
+
+`ByteString`: A ByteString is a list of 8 bit bytes.
+
+`Word32` is a 32 bit unsigned integer that is encoded in big endian.
+
+`NodeInfo`: Node Info is encoded in the [packed node
+format](#node-info-packed-node-format).
+
+## Deconstructed values
+
+Deconstructed values are used to test binary decoding and encoding capabilities
+of the implementation. To avoid simple echo implementations, the binary
+representation of a deconstructed value of complex types is usually different
+from the usual packet encoding. A deconstructed value contains sufficient
+information to construct a value.
+
+An isomorphism exists between the deconstructed value and the constructed
+value.
+
+The `construct` function shows how a value is constructed from its components.
+By default, there is no special construction, so the construct function is the
+identity function.
+
+The `deconstruct` function produces the separate components from a constructed
+value. Similarly to the construct function, the default deconstruct function is
+the identity function.
+
+The types `Word32`, `String`, and `ByteString` have no special deconstructed
+type and are just used as-is.
+
+### Deconstructed: Node Info
+
+The deconstructed Node Info value is a simple serialisation of each field,
+without packing the protocol and address family into the same byte using magic
+values.
+
+| Field       | Type     | Length                  |
+|:------------|:---------|:------------------------|
+| `is_tcp`    | `Bool`   | 1                       |
+| `is_ipv6`   | `Bool`   | 1                       |
+| IP address  | `Bytes`  | 4 for IPv4, 16 for IPv6 |
+| Port number | `Word16` | 2                       |
+| Public key  | `Bytes`  | 32                      |
+
+The transport protocol flag (`is_tcp`) is `False` (0x00) for UDP or `True`
+(0x01) for TCP. The address family flag is `False` for IPv4 or `True` for IPv6.
+
+## Test names
+
+Each test has a name that is used to identify the test so the rest of the input
+message (the payload) can be interpreted correctly.
+
+### Test: Failure Test
+
+This test receives no data and returns no data, but expects the test to always
+fail.
+
+| Length | Type | [Contents](#test-protocol) |
+|:-------|:-----|:---------------------------|
+| 0      | -    | No data                    |
+
+### Test: Success Test
+
+This test always succeeds, also with no data.
+
+| Length | Type | [Contents](#test-protocol) |
+|:-------|:-----|:---------------------------|
+| 0      | -    | No data                    |
+
+### Test: Skipped Test
+
+This test must be skipped, also with no data. If the SUT always returns Success
+or Failure, the test fails.
+
+| Length | Type | [Contents](#test-protocol) |
+|:-------|:-----|:---------------------------|
+| 0      | -    | No data                    |
+
+### Test: Binary Decode
+
+Checks whether the SUT can correctly decode values and produce the
+deconstructed value.
+
+Input:
+
+| Length | Type  | [Contents](#test-protocol) |
+|:-------|:------|:---------------------------|
+| `8`    | Int   | Length                     |
+| `[0,]` | Bytes | Binary encoding of value   |
+
+This test is parameterised by a [data format](#basic-data-encoding). The data
+format is part of the test name string. The test name "BinaryDecode" is
+followed by a space and the data format name (e.g. `"Word32"`, `"NodeInfo"`,
+...). Thus, the actual length is `12 + 1 + n` where `n` is the length of the
+data format name. The actual test name is then for example
+`"BinaryDecode NodeInfo"`. Every data format listed in the binary data encoding
+section is tested in both BinaryDecode and BinaryEncode.
+
+Not all binary encodings in the Tox protocol are self-delimiting, so an
+explicit length is prefixed to the bytes containing the binary encoding of the
+value.
+
+Output: The binary encoding of the [deconstructed value](#deconstructed-values)
+in a [Success](#success-result) message. On decoding failure, this test must
+return [Failure](#failure-result). If the SUT incorrectly determines that the
+byte array was a correct encoding of the data type, the test fails.
+
+### Test: Binary Encode
+
+Checks whether the SUT can correctly encode values given its constituent parts.
+This test is similar to the Binary Decode test, but receives the components the
+value is made of, instead of the encoded value itself.
+
+Input:
+
+| Length | Type  | [Contents](#test-protocol)             |
+|:-------|:------|:---------------------------------------|
+| `[0,]` | Bytes | Binary encoding of deconstructed value |
+
+Like [Binary Decode](#test-binary-decode), this test is also parameterised by
+[data format](#basic-data-encoding).
+
+All binary encodings of deconstructed values are self-delimiting, so an
+explicit length is not passed here.
+
+Output: The encoded value in a [Success](#success-result) message, not
+length-prefixed.
+
+### Test: Distance
+
+Checks whether the xor-distance metric works correctly.
+
+Input:
+
+| Length | Type       | [Contents](#test-protocol) |
+|:-------|:-----------|:---------------------------|
+| `32`   | Public Key | Origin key                 |
+| `32`   | Public Key | Alice key                  |
+| `32`   | Public Key | Bob key                    |
+
+Output:
+
+| Length | Type     | [Contents](#success-result) |
+|:-------|:---------|:----------------------------|
+| `1`    | Ordering | Less, Equal, or Greater     |
+
+The ordering value is encoded as follows:
+
+| Value   | Encoding | When                                                |
+|:--------|:---------|:----------------------------------------------------|
+| Less    | 0x00     | distance(Origin, Alice) &lt; distance(Origin, Bob)  |
+| Equal   | 0x01     | the distances are equal                             |
+| Greater | 0x02     | distance(Origin, Alice) &gt; distance(Origin, Bob). |
+
+### Test: Nonce Increment
+
+Checks whether the function to increment a nonce works correctly.
+
+Input: A 24-byte nonce.
+
+| Length | Type  | [Contents](#test-protocol) |
+|:-------|:------|:---------------------------|
+| `24`   | Nonce | Base nonce                 |
+
+Output:
+
+| Length | Type  | [Contents](#success-result) |
+|:-------|:------|:----------------------------|
+| `24`   | Nonce | Base nonce + 1              |
+
+### Test: K-Bucket Index
+
+Checks whether the K-bucket index is computed correctly.
+
+Input: Two public keys for Self and Other.
+
+| Length | Type       | [Contents](#test-protocol) |
+|:-------|:-----------|:---------------------------|
+| `32`   | Public Key | Base key                   |
+| `32`   | Public Key | Node key                   |
+
+Output: either `Nothing` or `Just i` in a [Success](#success-result) message.
+
+| Length | Value     | When                            |
+|:-------|:----------|:--------------------------------|
+| `1`    | 0x00      | Base key == Node key: `Nothing` |
+| `2`    | 0x01, `i` | otherwise: `Just i`             |
+
+The value of `i` is the k-bucket index of the Node key in a k-buckets instance
+with the given Base key.
+
+### Test: K-Bucket Nodes
+
+Input:
+
+| Length | Type           | [Contents](#test-protocol) |
+|:-------|:---------------|:---------------------------|
+| `8`    | Int            | Bucket size (k)            |
+| `32`   | Public Key     | Base key                   |
+| `[0,]` | \[Node Info\]  | Added nodes                |
+| `[0,]` | \[Public Key\] | Removed node keys          |
+
+The base key is the DHT public key of the simulated node. The added nodes is a
+list of nodes to consecutively add to the K-buckets. The removed nodes is a
+list of keys for which to consecutively remove the nodes from the K-buckets
+after adding all nodes from the added nodes list.
+
+Node Info is encoded with the packet node format. Recall that all lists are
+prefixed with a 64 bit length encoded in big endian.
+
+Output: A list of all nodes in the K-buckets.
+
+| Length | Type          | [Contents](#success-result) |
+|:-------|:--------------|:----------------------------|
+| `8`    | Int           | Length of node list         |
+| `[0,]` | \[Node Info\] | The node list               |
+
+## Result
+
+The Result type is written to stdout by the SUT. It is a single byte for
+Failure (0x00), Success (0x01), and Skipped (0x02), followed by the result
+data.
+
+### Failure Result
+
+In case of error, a `Failure` message is returned with an UTF-8 encoded failure
+message.
+
+| Length    | Type     | Contents       |
+|:----------|:---------|:---------------|
+| `1`       | `Tag`    | 0x00 (Failure) |
+| `8`       | `Int`    | length         |
+| `$length` | `String` | error message  |
+
+### Success Result
+
+In case of success, a `Success` message with an arbitrary piece of data is
+returned, depending on the test name in the input.
+
+| Length | Type    | Contents       |
+|:-------|:--------|:---------------|
+| `1`    | `Tag`   | 0x01 (Success) |
+| `[0,]` | `Bytes` | Payload        |
+
+### Skipped Result
+
+Tests can be skipped by returning a `Skipped` message. These tests will be
+ignored and reported as successful.
+
+| Length | Type  | Contents       |
+|:-------|:------|:---------------|
+| `1`    | `Tag` | 0x02 (Skipped) |
+
+All tests are ran with randomly generated inputs. The test runner has a
+`--seed` parameter to set the random seed to a fixed value. This helps make
+tests reproducible.
