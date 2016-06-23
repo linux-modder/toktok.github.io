@@ -442,7 +442,7 @@ Lists are initialised to be empty.
 A DHT Search Entry contains a k-buckets instance, which serves the same purpose
 as the Close List, but the base key is the searched node's Public Key. Once the
 searched node is found, it is also stored in the Search Entry. Recall that
-k-buckets never contain a Node Info for the base key, so it must be stored
+k-buckets never contain a node info for the base key, so it must be stored
 outside the k-buckets instance.
 
 A Search Entry is initialised with the searched-for Public Key. The contained
@@ -450,11 +450,11 @@ k-buckets instance is initialised to be empty.
 
 ### Manipulating the DHT node state
 
-Adding a search node to the DHT node state creates an empty entry in the Search
+Adding a search key to the DHT node state creates an empty entry in the Search
 Nodes list. If a search entry for the public key already existed, the "add"
 operation has no effect.
 
-Removing a search node removes its search entry and all associated data
+Removing a search key removes its search entry and all associated data
 structures from memory.
 
 The iteration order over the DHT state is to first process the Close List
@@ -466,23 +466,31 @@ contains. Node infos contained multiple times, e.g. as part of the close list
 and as part of various search entries, are counted as many times as they
 appear.
 
-Search nodes do not directly count towards the state size. The state size is
+Search keys do not directly count towards the state size. The state size is
 relevant to later pruning algorithms that decide when to remove a node info and
-when to request a ping from stale nodes. Search nodes, once added, are never
+when to request a ping from stale nodes. Search keys, once added, are never
 automatically pruned.
 
-Adding a node (Node Info) to the state is done by adding the node to each
-k-bucket in the state, i.e. the close list and all the k-buckets in the search
-entries.
+The bucket count of the state is the number of k-buckets instances. An empty
+state contains one k-buckets instance. For each added search key, it contains
+one additional k-buckets instance. Thus, the number of search keys is one less
+than the bucket count.
 
-When adding a node to the state, the search entry for the node's public key, if
-it exists, is updated to contain the new Node Info. All k-buckets that already
-contain the node will also be updated. See the k-buckets specification for the
-update algorithm.
+Adding a node info to the state is done by adding the node to each k-bucket in
+the state, i.e. the close list and all the k-buckets in the search entries.
 
-Removing a node from the state removes it from all k-buckets. If a search entry
-for the removed node's public key existed, the Node Info in that search entry
-is unset. The search entry itself is not removed.
+When adding a node info to the state, the search entry for the node's public
+key, if it exists, is updated to contain the new node info. All k-buckets that
+already contain the node info will also be updated. See the k-buckets
+specification for the update algorithm.
+
+Recall that a k-buckets instance will never contain the node info for its base
+key. Thus, when adding a node info for which a search entry exists, that node
+info will not be added to the search entry's k-buckets instance.
+
+Removing a node info from the state removes it from all k-buckets. If a search
+entry for the removed node's public key existed, the node info in that search
+entry is unset. The search entry itself is not removed.
 
 ## Self-organisation
 

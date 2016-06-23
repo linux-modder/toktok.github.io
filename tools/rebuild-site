@@ -9,7 +9,7 @@ cp ../tox-spec/spec.md _src/content/spec.md
 #	cp ../tox-spec/rust.css _src/files/css/
 cp -a ../tox-spec/img _src/files/
 
-if git diff --exit-code HEAD; then
+if git diff --exit-code HEAD `git ls-files | grep -v spec.pdf`; then
   echo "Site already up-to-date"
   exit
 fi

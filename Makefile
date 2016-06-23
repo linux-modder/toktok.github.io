@@ -7,4 +7,4 @@ build: tools/rebuild-site
 	tools/rebuild-site
 
 push: build
-	git diff --exit-code HEAD || (git commit -a --amend --no-edit && git push --force)
+	git diff --exit-code HEAD `git ls-files | grep -v spec.pdf` || (git commit -a --amend --no-edit && git push --force)
