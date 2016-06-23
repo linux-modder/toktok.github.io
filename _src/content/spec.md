@@ -471,20 +471,18 @@ relevant to later pruning algorithms that decide when to remove a node info and
 when to request a ping from stale nodes. Search nodes, once added, are never
 automatically pruned.
 
-Adding and removing a node (Node Info) to the state is done by adding or
-removing the node to each k-bucket in the state, i.e. the close list and all
-the k-buckets in the search entries.
+Adding a node (Node Info) to the state is done by adding the node to each
+k-bucket in the state, i.e. the close list and all the k-buckets in the search
+entries.
 
 When adding a node to the state, the search entry for the node's public key, if
 it exists, is updated to contain the new Node Info. All k-buckets that already
 contain the node will also be updated. See the k-buckets specification for the
 update algorithm.
 
-Removing a node from the state unsets the Node Info in the search entry, if
-such exists. The search entry itself is not removed. All k-buckets that
-contained the node will no longer contain it after removing the node from the
-state. The only reference to the node's public key will be the search entry, if
-it exists.
+Removing a node from the state removes it from all k-buckets. If a search entry
+for the removed node's public key existed, the Node Info in that search entry
+is unset. The search entry itself is not removed.
 
 ## Self-organisation
 
