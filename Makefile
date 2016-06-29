@@ -8,7 +8,7 @@ build: tools/rebuild-site .yst.stamp
 
 .yst.stamp:
 	git clone --depth=1 https://github.com/iphydf/yst
-	cabal install yst/yst.cabal
+	cabal install yst/yst.cabal --force-reinstalls
 	rm -rf yst
 	touch $@
 
