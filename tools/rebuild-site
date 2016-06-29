@@ -1,9 +1,10 @@
 #!/bin/sh
 
 if which pdflatex; then
-  make -C ../tox-spec spec.pdf
-  cp ../tox-spec/spec.pdf .
+  make -C ../tox-spec spec.pdf && cp ../tox-spec/spec.pdf .
 fi
+
+set -e
 
 cp ../tox-spec/spec.md _src/content/spec.md
 #	cp ../tox-spec/rust.css _src/files/css/
