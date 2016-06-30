@@ -112,6 +112,7 @@
 <li>
 <a id="toc-state-format" href="#state-format"><span class="header-section-number">18</span> State Format</a><ul><li><a id="toc-sections" href="#sections"><span class="header-section-number">18.1</span> Sections</a></li></ul>
 </li>
+<li><a id="toc-testing" href="#testing"><span class="header-section-number">19</span> Testing</a></li>
 </ul></nav>
         <a href="#introduction"><h1 id="introduction">
 <span class="header-section-number">1</span> Introduction</h1></a>
@@ -3568,6 +3569,10 @@ Node D
 <a href="#eof-0xff"><h3 id="eof-0xff">
 <span class="header-section-number">18.1.9</span> EOF (0xFF)</h3></a>
 <p><a id="eof-0xff-1" href="#eof-0xff-1" class="paragraph">1</a>This section indicates the end of the state file. This section doesn’t have any content and thus it’s length is 0.</p>
+<a href="#testing"><h1 id="testing">
+<span class="header-section-number">19</span> Testing</h1></a>
+<p><a id="testing-1" href="#testing-1" class="paragraph">1</a>The final part of the architecture is the test protocol. We use a [MessagePack](<a href="http://msgpack.org" class="uri">http://msgpack.org</a>) based RPC protocol to expose language agnostic interfaces to internal functions. Using property based testing with random inputs as well as specific edge case tests help ensure that an implementation of the Tox protocol following the architecture specified in this document is correct.</p>
+<p><a id="testing-2" href="#testing-2" class="paragraph">2</a>See the <a href="https://github.com/msgpack/msgpack/blob/master/spec.md">spec</a> of msgpack for information on the binary representation.</p>
       
 
     </div>

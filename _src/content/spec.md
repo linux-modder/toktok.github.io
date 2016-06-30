@@ -4047,3 +4047,15 @@ the integers stored in these nodes are stored in Big Endian as well.
 
 This section indicates the end of the state file. This section doesn't have any
 content and thus it's length is 0.
+
+# Testing
+
+The final part of the architecture is the test protocol. We use a
+\[MessagePack\](<http://msgpack.org>) based RPC protocol to expose language
+agnostic interfaces to internal functions. Using property based testing with
+random inputs as well as specific edge case tests help ensure that an
+implementation of the Tox protocol following the architecture specified in this
+document is correct.
+
+See the [spec](https://github.com/msgpack/msgpack/blob/master/spec.md) of
+msgpack for information on the binary representation.
