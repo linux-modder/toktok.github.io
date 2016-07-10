@@ -10,7 +10,7 @@
   </head>
   <body>
     <nav id="sidemenu">
-      <ul class="nav tree"><li><a href="index.html">Home</a></li><li><a href="mission.html">Mission</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="vision.html">Long term vision</a></li><li><a href="spec.html">Tox specification</a></li><li class="current"><a href="development.html">Development process</a></li><li><a href="designs.html">Designs</a></li></ul>
+      <ul class="nav tree"><li><a href="index.html">Home</a></li><li><a href="mission.html">Mission</a></li><li><a href="plan.html">Project plan</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="vision.html">Long term vision</a></li><li><a href="spec.html">Tox specification</a></li><li class="current"><a href="development.html">Development process</a></li><li><a href="designs.html">Designs</a></li></ul>
     </nav>
 
     <div id="content">
@@ -46,6 +46,60 @@
 <p>In many open source projects, the people with write access to the source code repository will submit code frequently and break things in the process. The breakage is then hopefully resolved. In contrast, toktok-team does not allow a single line of code (or documentation) to enter the master branch of the main repositories without being reviewed by at least one member that did not write the code. This means that even toktok-team members cannot push arbitrary unreviewed code to the repository.</p>
 <p>If you want to contribute code or documentation, you will go through the normal Github process of forking the repository and opening a pull request. One or more reviewers from toktok-team will read and comment on your submission. You will most likely receive actionable feedback, which you can discuss on the review. You can then add more commits to the review by pushing them to the pull request branch.</p>
 <p>A continuous integration system will build the code for all supported platforms and run an exhaustive testsuite on the x86_64 platform to increase confidence in the changes. We require close to 100% test coverage. The only exceptions are some cases of trivial generated code (Haskell <code>deriving</code>) and unreachable code caused by unavoidable weaknesses in the type system.</p>
+<h1 id="requirements"><span class="header-section-number">4</span> Requirements</h1>
+<ul>
+<li>Code review</li>
+<li>reviewable.io for code reviews.</li>
+<li>Every PR is required to go through review, no commits can be made directly to the master branch without review (Github branch protection).</li>
+<li>No branches other than master on the main repositories; contributors work on their own forks.</li>
+<li>Testing</li>
+<li>travis-ci.org for continuous integration.</li>
+<li>coveralls.io for test coverage recording.</li>
+<li>Github branch protection requires CI tests to pass and coverage to not decrease before merge.</li>
+<li>If multiple repositories: core CI must run client tests.</li>
+<li>Repository: we use multiple repos instead of one large one</li>
+<li>Separation of Github issue trackers.</li>
+<li>Separate permissions (alleviated a bit by strict code review).</li>
+<li>Git submodules could be used to track and cross test client and toxcore to verify that each compile with each other.</li>
+<li>Release plan</li>
+<li>Rolling release (everybody develops on HEAD).</li>
+<li>Support horizon: 4 weeks of backwards compatibility, ensured using the test suite from 4 weeks ago.</li>
+<li>No public releases (for now) to encourage focus within the project.</li>
+</ul>
+<h1 id="standards"><span class="header-section-number">5</span> Standards</h1>
+<p>We will hold ourselves and our contributors to high standards. Therefore, we require:</p>
+<ul>
+<li>Every function, macro, global constant, type, and aggregate member should be documented. Documentation may be omitted if</li>
+<li>the entity is not part of the module’s public API,</li>
+<li>the entity is trivial, and</li>
+<li>the context sufficiently explains the purpose.</li>
+<li>Commits should explain what their purpose is. Don’t just say what you’re doing, but also why.</li>
+<li>Every function must have 100% branch coverage in tests. This is a superset of line coverage where every condition must have been both true and false within the test run. In Haskell, 100% expression coverage is required, meaning every sub-expression must have been fully evaluated at one point. HPC (Haskell Program Coverage) under-reports coverage, so the 100% won’t be automatically measurable. In C, expression coverage is not measurable.</li>
+</ul>
+<p>As always, every standard is subject to personal judgement, so if a rule does not make sense in a certain situation, you’re free to ignore it, so long as you’re able to justify your reasoning.</p>
+<h1 id="repositories"><span class="header-section-number">6</span> Repositories</h1>
+<p>We have four main repositories:</p>
+<ul>
+<li>https://github.com/TokTok/toxcore is the stable C toxcore implementation we maintain. This repository applies strict contribution rules and new features cannot enter unless they comply with the standards.</li>
+<li>https://github.com/TokTok/client (TBD) is the main GUI client we will invest most resources in. Its test suite is used in toxcore’s CI runs to ensure no incompatible changes are introduced within the support horizon.</li>
+<li>https://github.com/TokTok/hstox is the Haskell test framework used to validate the C toxcore implementation. This validation involves implementing most of the protocol specification, so by the end this will be for the most part a reference implementation. This repository also contains the specification itself.</li>
+<li>https://github.com/GrayHatter/toxcore is the experimental toxcore fork on which more adventurous feature development occurs. See the roadmap and planning spreadsheet for the feature plans.</li>
+<li>The spec repository at https://github.com/TokTok/spec contains a non-golden Markdown version of the specification. Contributors may make PRs to this repository, which will then be ported back into the hstox repository.</li>
+</ul>
+<p><strong>Why do we have an experimental repository?</strong></p>
+<p>Stopping feature development entirely is not good for morale. We need to focus on stabilising our codebase, but releasing experimental features for people to play with will attract more users and possibly developers. µTox will be the client side of the experimental development.</p>
+<h1 id="stepwise-howto-for-a-contribution"><span class="header-section-number">7</span> Stepwise howto for a contribution</h1>
+<ul>
+<li>Fork the repository you want to contribute to on Github.</li>
+<li>Make a new branch in their own repository, named as you like (usually according to the topic you are working on).</li>
+<li>Push a commit to your new branch.</li>
+<li>PGP signed commits are strongly suggested, but not required.</li>
+<li>Make a PR (pull request) on Github.</li>
+<li>Amend your commit with changes as you go along.</li>
+<li>When you feel you’re ready, ask for a review, <span class="citation" data-cites="mentioning">@mentioning</span> the person you’d like as a reviewer.</li>
+<li>The reviewer will take up to 72 hours to reply. This reply may consist of “I’m reviewing it” or similar, if they think it takes more time to go through everything.</li>
+<li>If a review goes stale, comment on the PR and/or come talk on IRC in #toktok or #tox-dev.</li>
+</ul>
       </main>
 
     </div>
