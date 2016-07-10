@@ -1,6 +1,7 @@
 This is a timeless roadmap for current and upcoming TokTok projects. It is
-ordered by time and priority, but no times are assigned. The elements that have
-owners additionally have the owner's IRC nickname prepended in angle brackets.
+ordered by time and priority, but no times are assigned. Some of these projects
+are part of the [startup phases](plan). The more advanced milestones will be
+started after the project has achieved some stability.
 
 The milestones presented here are flexible. Priorities might change in the
 future as the landscape shifts and our target audience requires features at
@@ -8,11 +9,11 @@ different times.
 
 # Basic functionality
 
-- `<iphy>` Complete [Tox protocol specification](https://github.com/TokTok/tox-spec).
-- `<iphy>` Write a Haskell [model implementation](https://github.com/TokTok/hstox)
+- Complete [Tox protocol specification](https://github.com/TokTok/tox-spec).
+- Write a Haskell [model implementation](https://github.com/TokTok/hstox)
   of the Tox protocol and [tests](design/testing) for other implementations.
-- `<zetok>` Write a Rust [implementation](https://github.com/zetok/tox) of the
-  Tox protocol.
+- Write a Rust [implementation](https://github.com/zetok/tox) of the Tox
+  protocol.
 
 # Feature parity with toxcore
 

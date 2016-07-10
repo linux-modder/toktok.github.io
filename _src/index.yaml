@@ -6,6 +6,10 @@
   title    : Mission
   source   : content/mission.md
 
+- url      : plan.html
+  title    : Project plan
+  source   : content/plan.md
+
 - url      : roadmap.html
   title    : Roadmap
   source   : content/roadmap.md

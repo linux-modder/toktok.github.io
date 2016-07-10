@@ -94,3 +94,92 @@ and run an exhaustive testsuite on the x86\_64 platform to increase confidence
 in the changes. We require close to 100% test coverage. The only exceptions are
 some cases of trivial generated code (Haskell `deriving`) and unreachable code
 caused by unavoidable weaknesses in the type system.
+
+# Requirements
+
+- Code review
+  - reviewable.io for code reviews.
+  - Every PR is required to go through review, no commits can be made directly
+    to the master branch without review (Github branch protection).
+  - No branches other than master on the main repositories; contributors work on
+    their own forks.
+- Testing
+  - travis-ci.org for continuous integration.
+  - coveralls.io for test coverage recording.
+  - Github branch protection requires CI tests to pass and coverage to not
+    decrease before merge.
+  - If multiple repositories: core CI must run client tests.
+- Repository: we use multiple repos instead of one large one
+  - Separation of Github issue trackers.
+  - Separate permissions (alleviated a bit by strict code review).
+  - Git submodules could be used to track and cross test client and toxcore
+    to verify that each compile with each other.
+- Release plan
+  - Rolling release (everybody develops on HEAD).
+  - Support horizon: 4 weeks of backwards compatibility, ensured using the test
+    suite from 4 weeks ago.
+  - No public releases (for now) to encourage focus within the project.
+
+# Standards
+
+We will hold ourselves and our contributors to high standards. Therefore, we
+require:
+
+- Every function, macro, global constant, type, and aggregate member should be
+  documented. Documentation may be omitted if
+  - the entity is not part of the module’s public API,
+  - the entity is trivial, and
+  - the context sufficiently explains the purpose.
+- Commits should explain what their purpose is. Don’t just say what you’re
+  doing, but also why.
+- Every function must have 100% branch coverage in tests. This is a superset of
+  line coverage where every condition must have been both true and false within
+  the test run. In Haskell, 100% expression coverage is required, meaning every
+  sub-expression must have been fully evaluated at one point. HPC (Haskell
+  Program Coverage) under-reports coverage, so the 100% won’t be automatically
+  measurable. In C, expression coverage is not measurable.
+
+As always, every standard is subject to personal judgement, so if a rule does
+not make sense in a certain situation, you’re free to ignore it, so long as
+you’re able to justify your reasoning.
+
+# Repositories
+
+We have four main repositories:
+
+- https://github.com/TokTok/toxcore is the stable C toxcore implementation we
+  maintain. This repository applies strict contribution rules and new features
+  cannot enter unless they comply with the standards.
+- https://github.com/TokTok/client (TBD) is the main GUI client we will invest
+  most resources in. Its test suite is used in toxcore’s CI runs to ensure no
+  incompatible changes are introduced within the support horizon.
+- https://github.com/TokTok/hstox is the Haskell test framework used to validate
+  the C toxcore implementation. This validation involves implementing most of
+  the protocol specification, so by the end this will be for the most part a
+  reference implementation. This repository also contains the specification
+  itself.
+- https://github.com/GrayHatter/toxcore is the experimental toxcore fork on
+  which more adventurous feature development occurs. See the roadmap and
+  planning spreadsheet for the feature plans.
+- The spec repository at https://github.com/TokTok/spec contains a non-golden
+  Markdown version of the specification. Contributors may make PRs to this
+  repository, which will then be ported back into the hstox repository.
+
+**Why do we have an experimental repository?**
+
+Stopping feature development entirely is not good for morale. We need to focus
+on stabilising our codebase, but releasing experimental features for people to
+play with will attract more users and possibly developers. µTox will be the
+client side of the experimental development.
+
+# Stepwise howto for a contribution
+
+- Fork the repository you want to contribute to on Github.
+- Make a new branch in their own repository, named as you like (usually according to the topic you are working on).
+- Push a commit to your new branch.
+- PGP signed commits are strongly suggested, but not required.
+- Make a PR (pull request) on Github.
+- Amend your commit with changes as you go along.
+- When you feel you’re ready, ask for a review, @mentioning the person you’d like as a reviewer.
+- The reviewer will take up to 72 hours to reply. This reply may consist of “I’m reviewing it” or similar, if they think it takes more time to go through everything.
+- If a review goes stale, comment on the PR and/or come talk on IRC in #toktok or #tox-dev.
