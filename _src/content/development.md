@@ -147,23 +147,23 @@ you're able to justify your reasoning.
 
 We have four main repositories:
 
-- https://github.com/TokTok/toxcore is the stable C toxcore implementation we
-  maintain. This repository applies strict contribution rules and new features
-  cannot enter unless they comply with the standards.
-- https://github.com/TokTok/client (TBD) is the main GUI client we will invest
-  most resources in. Its test suite is used in toxcore's CI runs to ensure no
-  incompatible changes are introduced within the support horizon.
-- https://github.com/TokTok/hstox is the Haskell test framework used to
-  validate the C toxcore implementation. This validation involves implementing
-  most of the protocol specification, so by the end this will be for the most
-  part a reference implementation. This repository also contains the
-  specification itself.
-- https://github.com/GrayHatter/toxcore is the experimental toxcore fork on
-  which more adventurous feature development occurs. See the roadmap and
-  planning spreadsheet for the feature plans.
-- The spec repository at https://github.com/TokTok/spec contains a non-golden
-  Markdown version of the specification. Contributors may make PRs to this
-  repository, which will then be ported back into the hstox repository.
+- [toxcore](https://github.com/TokTok/toxcore) is the stable C toxcore
+  implementation we maintain. This repository applies strict contribution rules
+  and new features cannot enter unless they comply with the standards.
+- [client](https://github.com/TokTok/client) (TBD) is the main GUI client we
+  will invest most resources in. Its test suite is used in toxcore's CI runs to
+  ensure no incompatible changes are introduced within the support horizon.
+- [hstox](https://github.com/TokTok/hstox) is the Haskell test framework used
+  to validate the C toxcore implementation. This validation involves
+  implementing most of the protocol specification, so by the end this will be
+  for the most part a reference implementation. This repository also contains
+  the specification itself.
+- [spec](https://github.com/TokTok/spec) contains a non-golden Markdown version
+  of the specification. Contributors may make PRs to this repository, which
+  will then be ported back into the hstox repository.
+- [GrayHatter/toxcore](https://github.com/GrayHatter/toxcore) is the
+  experimental toxcore fork on which more adventurous feature development
+  occurs. See the roadmap and planning spreadsheet for the feature plans.
 
 **Why do we have an experimental repository?**
 
