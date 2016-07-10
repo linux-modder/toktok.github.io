@@ -31,16 +31,28 @@ all projects can be viewed on this page.
 <th>Issues</th>
 </tr>
 <tr>
+<td><a href="https://github.com/TokTok/toxcore">Core</a></td>
+<td><a href="https://travis-ci.org/TokTok/toxcore"><img src="https://api.travis-ci.org/TokTok/toxcore.svg" alt="Build Status"/></a></td>
+<td><a href="https://coveralls.io/github/TokTok/toxcore?branch=master"><img src="https://coveralls.io/repos/github/TokTok/toxcore/badge.svg?branch=master" alt="Coverage"/></a></td>
+<td><a href="https://github.com/TokTok/toxcore/issues">Link</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/TokTok/client">Client</a></td>
+<td><a href="https://travis-ci.org/TokTok/client"><img src="https://api.travis-ci.org/TokTok/client.svg" alt="Build Status"/></a></td>
+<td><a href="https://coveralls.io/github/TokTok/client?branch=master"><img src="https://coveralls.io/repos/github/TokTok/client/badge.svg?branch=master" alt="Coverage"/></a></td>
+<td><a href="https://github.com/TokTok/client/issues">Link</a></td>
+</tr>
+<tr>
 <td><a href="https://github.com/TokTok/hstox">HsTox</a></td>
 <td><a href="https://travis-ci.org/TokTok/hstox"><img src="https://api.travis-ci.org/TokTok/hstox.svg" alt="Build Status"/></a></td>
 <td><a href="https://coveralls.io/github/TokTok/hstox?branch=master"><img src="https://coveralls.io/repos/github/TokTok/hstox/badge.svg?branch=master" alt="Coverage"/></a></td>
 <td><a href="https://github.com/TokTok/hstox/issues">Link</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/TokTok/tox-spec">Tox Spec</a></td>
-<td><a href="https://travis-ci.org/TokTok/tox-spec"><img src="https://api.travis-ci.org/TokTok/tox-spec.svg" alt="Build Status"/></a></td>
+<td><a href="https://github.com/TokTok/spec">Tox Spec</a></td>
+<td><a href="https://travis-ci.org/TokTok/spec"><img src="https://api.travis-ci.org/TokTok/spec.svg" alt="Build Status"/></a></td>
 <td/>
-<td><a href="https://github.com/TokTok/tox-spec/issues">Link</a></td>
+<td><a href="https://github.com/TokTok/spec/issues">Link</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/TokTok/toktok.github.io">TokTok Website</a></td>
