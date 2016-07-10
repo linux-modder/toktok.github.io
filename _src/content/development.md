@@ -98,14 +98,14 @@ caused by unavoidable weaknesses in the type system.
 # Requirements
 
 - Code review
-    - reviewable.io for code reviews.
+    - [Reviewable](reviewable.io) for code reviews.
     - Every PR is required to go through review, no commits can be made
       directly to the master branch without review (Github branch protection).
     - No branches other than master on the main repositories; contributors work
       on their own forks.
 - Testing
-    - travis-ci.org for continuous integration.
-    - coveralls.io for test coverage recording.
+    - [Travis](travis-ci.org) for continuous integration.
+    - [Coveralls](coveralls.io) for test coverage recording.
     - Github branch protection requires CI tests to pass and coverage to not
       decrease before merge.
     - If multiple repositories: core CI must run client tests.
