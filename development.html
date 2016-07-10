@@ -48,31 +48,41 @@
 <p>A continuous integration system will build the code for all supported platforms and run an exhaustive testsuite on the x86_64 platform to increase confidence in the changes. We require close to 100% test coverage. The only exceptions are some cases of trivial generated code (Haskell <code>deriving</code>) and unreachable code caused by unavoidable weaknesses in the type system.</p>
 <h1 id="requirements"><span class="header-section-number">4</span> Requirements</h1>
 <ul>
-<li>Code review</li>
+<li>Code review
+<ul>
 <li>reviewable.io for code reviews.</li>
 <li>Every PR is required to go through review, no commits can be made directly to the master branch without review (Github branch protection).</li>
 <li>No branches other than master on the main repositories; contributors work on their own forks.</li>
-<li>Testing</li>
+</ul></li>
+<li>Testing
+<ul>
 <li>travis-ci.org for continuous integration.</li>
 <li>coveralls.io for test coverage recording.</li>
 <li>Github branch protection requires CI tests to pass and coverage to not decrease before merge.</li>
 <li>If multiple repositories: core CI must run client tests.</li>
-<li>Repository: we use multiple repos instead of one large one</li>
+</ul></li>
+<li>Repository: we use multiple repos instead of one large one
+<ul>
 <li>Separation of Github issue trackers.</li>
 <li>Separate permissions (alleviated a bit by strict code review).</li>
 <li>Git submodules could be used to track and cross test client and toxcore to verify that each compile with each other.</li>
-<li>Release plan</li>
+</ul></li>
+<li>Release plan
+<ul>
 <li>Rolling release (everybody develops on HEAD).</li>
 <li>Support horizon: 4 weeks of backwards compatibility, ensured using the test suite from 4 weeks ago.</li>
 <li>No public releases (for now) to encourage focus within the project.</li>
+</ul></li>
 </ul>
 <h1 id="standards"><span class="header-section-number">5</span> Standards</h1>
 <p>We will hold ourselves and our contributors to high standards. Therefore, we require:</p>
 <ul>
-<li>Every function, macro, global constant, type, and aggregate member should be documented. Documentation may be omitted if</li>
+<li>Every function, macro, global constant, type, and aggregate member should be documented. Documentation may be omitted if
+<ul>
 <li>the entity is not part of the module’s public API,</li>
 <li>the entity is trivial, and</li>
 <li>the context sufficiently explains the purpose.</li>
+</ul></li>
 <li>Commits should explain what their purpose is. Don’t just say what you’re doing, but also why.</li>
 <li>Every function must have 100% branch coverage in tests. This is a superset of line coverage where every condition must have been both true and false within the test run. In Haskell, 100% expression coverage is required, meaning every sub-expression must have been fully evaluated at one point. HPC (Haskell Program Coverage) under-reports coverage, so the 100% won’t be automatically measurable. In C, expression coverage is not measurable.</li>
 </ul>
