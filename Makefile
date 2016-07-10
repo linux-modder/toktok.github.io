@@ -3,7 +3,7 @@ export XSLT_INPUTS :=			\
 	_src/site/spec.html		\
 	_src/site/design/*
 
-build: tools/rebuild-site .yst.stamp
+build: tools/rebuild-site .yst.stamp $(shell find _src -type f)
 	tools/rebuild-site
 
 .yst.stamp:
